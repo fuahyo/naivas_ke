@@ -1,15 +1,12 @@
 seeder:
   file: ./seeder/seeder.rb
 parsers:
-  - file: ./parsers/categories.rb
-    page_type: categories
-  - file: ./parsers/location.rb
-    page_type: location
+  - file: ./parsers/details.rb
+    page_type: details
   - file: ./parsers/category.rb
     page_type: category
-  - file: ./parsers/products.rb
-    page_type: products
-    disabled: false
+  - file: ./parsers/listings.rb
+    page_type: listings
 finisher:
   file: ./finisher/finisher.rb
   disabled: true

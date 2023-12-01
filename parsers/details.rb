@@ -8,7 +8,7 @@ brand = product.css('.product-attributes .product-manufacturer a').text.strip re
 is_private_label = nil
 if brand.include?('NAIVAS')
     is_private_label = false
-elsif brand.nil?
+elsif brand.empty?
     is_private_label = nil
 else
     is_private_label = true

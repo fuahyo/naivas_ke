@@ -3,7 +3,7 @@ vars = page['vars']
 product = html.css('div#mainProduct')
 
 name = product.css('h1.page-heading').text
-brand = product.css('.product-attributes .product-manufacturer a').text rescue nil
+brand = product.css('.product-attributes .product-manufacturer a').text.strip rescue nil
 
 is_private_label = nil
 if brand.include?('NAIVAS')
@@ -11,7 +11,7 @@ if brand.include?('NAIVAS')
 elsif brand.nil?
     is_private_label = nil
 else
-    is_private_label = false
+    is_private_label = true
 end
 
 id = product.css('.product-attributes .product-reference span').text.strip
@@ -122,7 +122,7 @@ out = {
     'name' => name,
     'brand' => brand,
     'category_id' => vars['category_id'],
-    'category' => vars['catergory_name'],
+    'category' => vars['category_name'],
     'sub_category' => sub_category,
     'customer_price_lc' => customer_price_lc,
     'base_price_lc' => base_price_lc,

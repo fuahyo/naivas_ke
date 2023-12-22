@@ -16,3 +16,4 @@ body.css('.product-list .products .product-miniature').each_with_index do |prod,
         }.merge(vars)
     }
 end
+

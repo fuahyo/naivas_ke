@@ -20,19 +20,26 @@ body.css('.product-list .products .product-miniature').each_with_index do |prod,
     save_outputs(outputs) if outputs.count > 99
 end
 
-if page['url'].include?('?page=1') && count >= 12
-    total_product = body.at('.total-products').text
-    next_page = vars['page'] + 1
+# pagination
+PRODUCT_PER_PAGE = 12
 
-    pages << {
-        url: page['url'].gsub(/\?page=\d+/, "?page=#{next_page}"),
-        method: 'POST',
-        fetch_type: 'browser',
-        page_type: 'listings',
-        priority: 500,
-        headers: page['headers'],
-        vars: vars.merge({
-            "page" => vars['page'] + 1,
-        })
-    }
+if vars['page'] == 1 && count == PRODUCT_PER_PAGE
+    total_product = body.at('.total-products').text[/\d+/].to_i
+
+    (2..(total_product/PRODUCT_PER_PAGE)).each do |pn|
+        puts pn
+        pages << {
+            url: page['url'].gsub(/\?page=\d+/, "?page=#{pn}"),
+            method: 'POST',
+            fetch_type: 'browser',
+            page_type: 'listings',
+            priority: 500,
+            headers: page['headers'],
+            vars: vars.merge({
+                "page" => pn,
+            })
+        }
+
+    end
+    
 end

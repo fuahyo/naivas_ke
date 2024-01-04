@@ -45,6 +45,11 @@ else
     base_price_lc = reg_price
     customer_price_lc = price
 
+    if costumer_price_lc > base_price_lc
+        customer_price_lc = base_price_lc
+    end
+    
+
     percentage = ((base_price_lc.to_f - customer_price_lc.to_f)/(base_price_lc.to_f) * 100).to_f.round(7)
     has_discount = true
     is_promoted = true
@@ -106,6 +111,10 @@ product_pieces = $1
 product_pieces = 1 if product_pieces.nil?
 
 sub_category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[2].text.strip}"
+
+category_id = content[/product-id-category-(\d+)/, 1] 
+raise "category_id not found" if category_id.nil? || category_id.empty?
+
 # require 'byebug';byebug
 out = {
     '_collection' => 'products',
@@ -121,7 +130,7 @@ out = {
     'competitor_product_id' => id,
     'name' => name,
     'brand' => brand,
-    'category_id' => vars['category_id'],
+    'category_id' => category_id,
     'category' => vars['category_name'],
     'sub_category' => sub_category,
     'customer_price_lc' => customer_price_lc,

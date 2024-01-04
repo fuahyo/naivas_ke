@@ -45,7 +45,7 @@ else
     base_price_lc = reg_price
     customer_price_lc = price
 
-    if costumer_price_lc > base_price_lc
+    if customer_price_lc > base_price_lc
         customer_price_lc = base_price_lc
     end
     

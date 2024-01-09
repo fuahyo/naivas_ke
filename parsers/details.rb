@@ -48,15 +48,12 @@ else
     if customer_price_lc > base_price_lc
         customer_price_lc = base_price_lc
     end
-    
+    has_discount = customer_price_lc != base_price_lc
 
-    percentage = ((base_price_lc.to_f - customer_price_lc.to_f)/(base_price_lc.to_f) * 100).to_f.round(7)
-    has_discount = true
-    is_promoted = true
-    type_of_promotion = "Tags"
-    promo_attributes = {
-        "promo_detail": "'#{percentage.to_i}%'"
-    }.to_json
+    percentage = has_discount ? ((base_price_lc.to_f - customer_price_lc.to_f)/(base_price_lc.to_f) * 100).to_f.round(7) : nil
+    is_promoted = has_discount ? true : false
+    type_of_promotion = has_discount ? "Tags" : nil
+    promo_attributes = has_discount ? {"promo_detail": "'#{percentage.to_i}%'"}.to_json : nil
 end
 
 size_std = nil
@@ -110,6 +107,7 @@ product_pieces = $1
 
 product_pieces = 1 if product_pieces.nil?
 
+category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[1].text.strip}"
 sub_category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[2].text.strip}"
 
 category_id = content[/product-id-category-(\d+)/, 1] 
@@ -131,7 +129,7 @@ out = {
     'name' => name,
     'brand' => brand,
     'category_id' => category_id,
-    'category' => vars['category_name'],
+    'category' => category,
     'sub_category' => sub_category,
     'customer_price_lc' => customer_price_lc,
     'base_price_lc' => base_price_lc,

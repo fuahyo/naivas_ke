@@ -1,3 +1,5 @@
+limbo page['gid'] if content.include? 'This product is no longer available.'
+
 html = Nokogiri::HTML(content)
 vars = page['vars']
 product = html.css('div#mainProduct')

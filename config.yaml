@@ -21,7 +21,7 @@ exporters:
     export_extension: json.gz
     no_tar: true
   - exporter_name: items_csv
-    export_filename: <d:yyyyMMdd>_Naivas_KE
+    export_filename: <d:yyyyMMdd>_<name>
     no_subfolder: true
     exporter_type: csv
     collection: products

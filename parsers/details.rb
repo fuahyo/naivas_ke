@@ -109,11 +109,13 @@ product_pieces = $1
 
 product_pieces = 1 if product_pieces.nil?
 
-category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[2].text.strip}"
-sub_category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[3].text.strip}"
+category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[1].text.strip}"
 
-category_id = content[/product-id-category-(\d+)/, 1] 
-raise "category_id not found" if category_id.nil? || category_id.empty?
+sub_category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[2..-2].map{|a| a.text.strip}.join(' > ')}"
+
+
+category_id = nil
+# raise "category_id not found" if category_id.nil? || category_id.empty?
 
 # require 'byebug';byebug
 out = {

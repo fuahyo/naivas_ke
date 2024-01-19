@@ -28,12 +28,12 @@ else
     is_available = false
 end
 
-price = html.css('span.current-price').text.gsub(',', '.').gsub('KES ', '').to_f
+price = html.css('span.current-price').text.gsub(',', '').gsub('KES ', '').to_f
 reg_price = html.css('.product-prices span.regular-price').text
 if reg_price.empty?
     reg_price = nil
 else
-    reg_price = reg_price.gsub(',', '.').gsub('KES ', '').to_f
+    reg_price = reg_price.gsub(',', '').gsub('KES ', '').to_f
 end
 # require 'byebug'; byebug
 if reg_price.nil?

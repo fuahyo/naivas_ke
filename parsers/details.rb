@@ -1,3 +1,5 @@
+limbo page['gid'] if content.include? 'This product is no longer available.'
+
 html = Nokogiri::HTML(content)
 vars = page['vars']
 product = html.css('div#mainProduct')
@@ -26,12 +28,12 @@ else
     is_available = false
 end
 
-price = html.css('span.current-price').text.gsub(',', '.').gsub('KES ', '').to_f
+price = html.css('span.current-price').text.gsub(',', '').gsub('KES ', '').to_f
 reg_price = html.css('.product-prices span.regular-price').text
 if reg_price.empty?
     reg_price = nil
 else
-    reg_price = reg_price.gsub(',', '.').gsub('KES ', '').to_f
+    reg_price = reg_price.gsub(',', '').gsub('KES ', '').to_f
 end
 # require 'byebug'; byebug
 if reg_price.nil?
@@ -45,13 +47,15 @@ else
     base_price_lc = reg_price
     customer_price_lc = price
 
-    percentage = ((base_price_lc.to_f - customer_price_lc.to_f)/(base_price_lc.to_f) * 100).to_f.round(7)
-    has_discount = true
-    is_promoted = true
-    type_of_promotion = "Tags"
-    promo_attributes = {
-        "promo_detail": "'#{percentage.to_i}%'"
-    }.to_json
+    if customer_price_lc > base_price_lc
+        customer_price_lc = base_price_lc
+    end
+    has_discount = customer_price_lc != base_price_lc
+
+    percentage = has_discount ? ((base_price_lc.to_f - customer_price_lc.to_f)/(base_price_lc.to_f) * 100).to_f.round(7) : nil
+    is_promoted = has_discount ? true : false
+    type_of_promotion = has_discount ? "Tags" : nil
+    promo_attributes = has_discount ? {"promo_detail": "'#{percentage.to_i}%'"}.to_json : nil
 end
 
 size_std = nil
@@ -66,18 +70,13 @@ regexps = [
     /(\d*[\.,]?\d+)\s?([Oo]unce)/,
     /(\d*[\.,]?\d+)\s?([Mm][Ll])/,
     /(\d*[\.,]?\d+)\s?([Cc][Ll])/,
+    /(\d*[\.,]?\d+)\s?(gm)/i,
     /(\d*[\.,]?\d+)\s?([Ll])/,
     /(\d*[\.,]?\d+)\s?([Gg])$/,
     /(\d*[\.,]?\d+)\s?([Gg])\s+/,
     /(\d*[\.,]?\d+)\s?([Ll]itre)/,
-    /(\d*[\.,]?\d+)\s?([Ss]ervings)/,
-    /(\d*[\.,]?\d+)\s?([Pp]acket\(?s?\)?)/,
-    /(\d*[\.,]?\d+)\s?([Cc]apsules)/,
-    /(\d*[\.,]?\d+)\s?([Tt]ablets)/,
-    /(\d*[\.,]?\d+)\s?([Tt]ubes)/,
-    /(\d*[\.,]?\d+)\s?([Cc]hews)/,
     /(\d*[\.,]?\d+)\s?([Mm]illiliter)/i,
-    /(\d*[\.,]?\d+)\s?per\s?([Pp]ack)/i,
+    /(\d*[\.,]?\d+)\s?(Inche?s?)/i,
     /(\d*[\.,]?\d+)\s?([Kk][Gg])/i,
     /(\d*[\.,]?\d+)\s?([Cc][Cc])/i,
     /(\d*[\.,]?\d+)\s?([Mm][Tt])/i,
@@ -92,20 +91,39 @@ size_unit_std = $2
 
 product_pieces = nil
 regexps = [
-    /(\d*[\.,]?\d+)\s?(unités)/,
-    /(\d*[\.,]?\d+)\s?(pcs)/,
-    /(\d*[\.,]?\d+)\s?(unité)/,
-    /(\d*[\.,]?\d+)\s?(pièces)/,
-    /(\d*[\.,]?\d+)\s?(tranches)/,
-    /(\d*[\.,]?\d+)\s?(sachets)/,
-    /(\d*[\.,]?\d+)\s+(x)\s+/,
+    /(\d*[\.,]?\d+)\s?(unités)/i,
+    /(\d*[\.,]?\d+)\s?(pcs)/i,
+    /(\d*[\.,]?\d+)\s?(unité)/i,
+    /(\d*[\.,]?\d+)\s?(bags?)/i,
+    /(\d*[\.,]?\d+)\s?(sheets?)/i,
+    /(\d*[\.,]?\d+)\s?(pièces)/i,
+    /(\d*[\.,]?\d+)\s?(pieces)/i,
+    /(\d*[\.,]?\d+)\s?(Rolls?)/i,
+    /(\d*[\.,]?\d+)\s?(Packs?)/i,
+    /(\d*[\.,]?\d+)\s?(tranches)/i,
+    /(\d*[\.,]?\d+)\s?(sachets?)/i,
+    /(\d*[\.,]?\d+)\s?([Cc]apsules)/,
+    /(\d*[\.,]?\d+)\s?([Tt]ablets)/,
+    /(\d*[\.,]?\d+)\s?([Tt]ubes)/,
+    /(\d*[\.,]?\d+)\s?([Ss]ervings)/,
+    /(\d*[\.,]?\d+)\s?([Pp]acket\(?s?\)?)/,
+    /(\d*[\.,]?\d+)\s?([Cc]hews)/,
+    /(\d*[\.,]?\d+)\s?(\'S)/,
+    /(\d*[\.,]?\d+)\s+(x)\s+/i,
 ]
 regexps.find {|regexp| name =~ regexp}
 product_pieces = $1
 
 product_pieces = 1 if product_pieces.nil?
 
-sub_category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[2].text.strip}"
+category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[1].text.strip}"
+
+sub_category = "#{html.css('.breadcrumb .breadcrumb-item .item-name')[2..-2].map{|a| a.text.strip}.join(' > ')}"
+
+
+category_id = nil
+# raise "category_id not found" if category_id.nil? || category_id.empty?
+
 # require 'byebug';byebug
 out = {
     '_collection' => 'products',
@@ -121,8 +139,8 @@ out = {
     'competitor_product_id' => id,
     'name' => name,
     'brand' => brand,
-    'category_id' => vars['category_id'],
-    'category' => vars['category_name'],
+    'category_id' => category_id,
+    'category' => category,
     'sub_category' => sub_category,
     'customer_price_lc' => customer_price_lc,
     'base_price_lc' => base_price_lc,

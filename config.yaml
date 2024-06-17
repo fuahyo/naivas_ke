@@ -1,9 +1,9 @@
 seeder:
   file: ./seeder/seeder.rb
-# parsers:
-#   - file: ./parsers/details.rb
-#     page_type: details
-#   - file: ./parsers/category.rb
-#     page_type: category
+parsers:
+  - file: ./parsers/category.rb
+    page_type: category
+  # - file: ./parsers/details.rb
+  #   page_type: details
 #   - file: ./parsers/listings.rb
 #     page_type: listings

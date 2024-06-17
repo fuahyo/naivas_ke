@@ -1,10 +1,11 @@
 html = Nokogiri::HTML(content)
 
-categories = html.css('.masonry a[class*="hover:text-naivas-green"]', '#mega-menu-full-dropdown-566 a')
+categories = html.css('.items-stretch a.text-sm')
+# categories = html.css('.masonry a[class*="hover:text-naivas-green"]', '#mega-menu-full-dropdown-566 a')
 categories.each do |cat|
     cat_name = cat.text.strip
     cat_url = cat.attr('href').to_s
-    next if cat_url.to_s.empty?
+    # next if cat_url.to_s.empty?
 
     if cat_url.to_s != ''
         pages << {

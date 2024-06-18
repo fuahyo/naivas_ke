@@ -1,8 +1,8 @@
 pages << {
-    url: "https://naivas.online",
+    url: "https://naivas.online/",
     page_type: "category",
     http2: true,
-    # fetch_type: "browser",
+    fetch_type: "browser",
     method: "GET",
     # driver:{
     #     "name": "#{rand}",

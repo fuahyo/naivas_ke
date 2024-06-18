@@ -45,6 +45,6 @@ if vars['page'] == 1 && count == PRODUCT_PER_PAGE
     end
     
 end
-File.open("naivasCategories3.json","w") do |f|
-    f.write(JSON.pretty_generate(pages))
-end
+# File.open("naivasCategories3.json","w") do |f|
+#     f.write(JSON.pretty_generate(pages))
+# end

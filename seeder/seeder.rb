@@ -1,8 +1,8 @@
 pages << {
-    url: "https://naivas.online",
+    url: "https://naivas.online/?automatic_redirect=1",
     page_type: "category",
     http2: true,
-    # fetch_type: "browser",
+    fetch_type: "browser",
     method: "GET",
     # driver:{
     #     "name": "#{rand}",
@@ -30,6 +30,6 @@ pages << {
         'sec-ch-ua' => '"Chromium";v="124", "Opera";v="110", "Not-A.Brand";v="99"',
         'sec-ch-ua-mobile' => '?0',
         'sec-ch-ua-platform' => '"Windows"'
-      },
-      verify: false 
+    },
+    verify: false,
 }

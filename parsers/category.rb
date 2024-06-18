@@ -4,13 +4,14 @@ categories = html.css('.items-stretch a.text-sm')
 # categories = html.css('.masonry a[class*="hover:text-naivas-green"]', '#mega-menu-full-dropdown-566 a')
 categories.each do |cat|
     cat_name = cat.text.strip
-    cat_url = cat.attr('href').to_s
+    cat_url = cat.attr('href')
+    cat_url = "https://naivas.online" + cat_url + "?page=1"
     # next if cat_url.to_s.empty?
 
     if cat_url.to_s != ''
         pages << {
-            url: 'https://naivas.online' + cat_url + "?page=1",
-            method: 'POST',
+            url: cat_url,
+            method: 'GET',
             fetch_type: 'browser',
             priority: 500,
             page_type: 'listings',

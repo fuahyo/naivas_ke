@@ -31,7 +31,7 @@ categories.each do |cat|
                 'sec-ch-ua-mobile' => '?0',
                 'sec-ch-ua-platform' => '"Windows"'
             },
-            verify: false,
+            # verify: false,
             vars: {
                 category_name: cat_name,
                 page: 1
